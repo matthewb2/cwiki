@@ -9,6 +9,14 @@ use Parsedown; // 이 줄을 추가하세요!
 
 class Wiki extends BaseController
 {
+    public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
+    {
+        parent::initController($request, $response, $logger);
+
+        // 헬퍼 로드 (time_helper.php를 만들었다면 'time' 입력)
+        helper(['url', 'form', 'time']);
+    }
+
     public function index()
     {
         /*
@@ -157,24 +165,25 @@ class Wiki extends BaseController
                 'updated_at' => null,
             ];
             return view('wiki/view', $data);
-        } else {
-            $latest = $revisionModel->getLatestRevision($page['id']);
-            $rawContent = $latest ? $latest['content'] : '';
-
-            // 핵심: 공통 메서드 호출
-            $finalContent = $this->renderWiki($rawContent);
-
-            $data = [
-                'title'   => $page['title'],
-                'page'    => $page,
-                'content' => $finalContent,
-                'updated_at' => $latest ? $latest['created_at'] : $page['created_at'],
-            ];
         }
+
         /** CodeIgniter 4의 내장 view(파일경로, 데이터배열) 함수
          *  첫 번째 인자 ('wiki/view'): 어떤 파일을 보여줄지 정합니다. app/Views/wiki/view.php 파일을 찾으라는 뜻입니다.
          *  두 번째 인자 ($data): 컨트롤러에서 만든 변수들을 뷰 파일로 전달합니다.
          */
+        // 3. 문서를 찾았을 때 리비전 가져오기
+        $latestRevision = $revisionModel->where('page_id', $page['id'])
+            ->orderBy('created_at', 'DESC')
+            ->first();
+
+        $data = [
+            'title'      => $page['title'],
+            'page'       => $page,
+            'content'    => $this->renderWiki($latestRevision ? $latestRevision['content'] : '내용이 없습니다.'),
+            // 저장된 표준시를 한국시간으로 바꾸는 로직은 이미 view.php나 헬퍼에 있다고 가정합니다.
+            'updated_at' => $latestRevision ? $latestRevision['created_at'] : $page['created_at'],
+        ];
+
         return view('wiki/view', $data);
     }
 
@@ -280,10 +289,29 @@ class Wiki extends BaseController
 
         if ($randomPage) {
             // 해당 문서의 슬러그를 이용하여 상세 페이지로 이동합니다.
-            return redirect()->to(base_url('wiki/' . $randomPage['slug']));
+            return redirect()->to(base_url('view/' . urlencode($randomPage['slug'])));
         }
 
         // 문서가 하나도 없을 경우 홈으로 보냅니다.
         return redirect()->to(base_url());
+    }
+
+    public function recent()
+    {
+        $pageModel = new \App\Models\PageModel();
+
+        // 1. updated_at(수정 시각)을 기준으로 내림차순(DESC) 정렬하여 모든 문서를 가져옵니다.
+        // 넉넉하게 최근 50개 정도만 보여주도록 설정할 수 있습니다.
+        $recentPages = $pageModel->orderBy('updated_at', 'DESC')
+            ->limit(50)
+            ->findAll();
+
+        $data = [
+            'title'       => '최근 변경 내역',
+            'recentPages' => $recentPages
+        ];
+
+        // 2. 결과를 보여줄 뷰 파일을 호출합니다.
+        return view('wiki/recent', $data);
     }
 }

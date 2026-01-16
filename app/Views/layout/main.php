@@ -24,12 +24,11 @@
 </head>
 
 <body class="bg-gray-50 text-gray-900 font-sans">
-
     <nav class="bg-slate-800 text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <a href="<?= site_url() ?>" class="text-xl font-bold tracking-tight">C<span class="text-blue-400">Wiki</span></a>
 
-            <div class="flex items-center gap-4">
+            <div class="flex flex-col items-end gap-1">
                 <form action="<?= site_url('search/') ?>" method="get" class="relative" id="search-form">
                     <button type="submit" class="absolute inset-y-0 left-0 pl-3 flex items-center hover:text-blue-400 transition-colors">
                         <svg class="h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -40,10 +39,16 @@
                     <input type="text" name="q" placeholder="문서 검색..."
                         class="bg-slate-700 text-sm rounded-full py-1.5 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 md:w-64">
                 </form>
+
+                <div class="flex gap-3 text-xs text-slate-400 px-2">
+                    <a href="<?= site_url('recent') ?>" class="hover:text-blue-400 transition-colors">최근 바뀜</a>
+                    <a href="<?= site_url('random') ?>" class="hover:text-blue-400 transition-colors">임의 문서</a>
+                    <a href="#" class="hover:text-blue-400 transition-colors">미디어 관리자</a>
+                    <a href="#" class="hover:text-blue-400 transition-colors">사이트맵</a>
+                </div>
             </div>
         </div>
     </nav>
-
     <div class="container mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row gap-8">
             <main class="w-full md:w-3/4 bg-white p-8 rounded-lg shadow-sm border border-gray-200">
@@ -57,12 +62,7 @@
                         <nav class="flex flex-col gap-2 text-sm">
                             <a href="<?= site_url('edit/' . urlencode($page['title'] ?? 'Home')) ?>" class="text-blue-600 hover:underline">📝 이 문서 편집</a>
                             <a href="<?= isset($title) ? site_url('view/' . urlencode($title)) : '#' ?>" class="text-blue-600 hover:underline">📄 문서 보기</a>
-                            <a href="<?= base_url('random') ?>" class="text-gray-600 hover:text-blue-500 flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                </svg>
-                                <span>임의 문서</span>
-                            </a>
+
                         </nav>
                     </div>
                 </div>

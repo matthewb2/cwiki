@@ -16,5 +16,6 @@ $routes->group('cwiki', function ($routes) {
     $routes->get('revision/(:num)', 'Wiki::viewRevision/$1');
     $routes->get('search', 'Wiki::search');
     // 기존 라우트 설정들 사이에 추가
-    $routes->get('wiki/random', 'Wiki::random');
+    $routes->get('random', 'Wiki::random');
+    $routes->get('recent', 'Wiki::recent');
 });
