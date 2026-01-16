@@ -8,5 +8,6 @@ class PageModel extends Model
 {
     protected $table = 'pages';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['title']; // 저장을 허용할 필드
+    // updated_at을 allowedFields에 추가해야 합니다!
+    protected $allowedFields = ['title', 'updated_at'];
 }

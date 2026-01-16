@@ -2,13 +2,17 @@
 
 <?= $this->section('content') ?>
     <div class="mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">편집 중: <span class="text-blue-600"><?= esc($page['title']) ?></span></h2>
+        <h2 class="text-2xl font-bold text-gray-800">편집 중: <span class="text-blue-600"><?= esc($title) ?></span>
+        </h2>
         <p class="text-sm text-gray-500 mt-1">마크다운 형식을 사용하여 문서를 작성하세요.</p>
     </div>
 
-    <form action="/save" method="post" class="space-y-6">
+    <form action="<?= site_url('save') ?>" method="post" class="space-y-6">
+    <?php if (isset($page['id'])): ?>
+        <input type="hidden" name="id" value="<?= $page['id'] ?>">
+    <?php endif; ?>
         <?= csrf_field() ?>
-        <input type="hidden" name="page_id" value="<?= $page['id'] ?>">
+        <input type="hidden" name="title" value="<?=esc($title)?>">
         
         <div>
             <textarea name="content" 
@@ -24,7 +28,7 @@
         </div>
         
         <div class="flex justify-between items-center pt-4 border-t">
-            <a href="/view/<?= urlencode($page['title']) ?>" class="text-gray-600 hover:text-gray-900 font-medium">취소</a>
+            <a href="<?= site_url('view/' . urlencode($title)) ?>" class="text-gray-600 hover:text-gray-900 font-medium">취소</a>
             <button type="submit" 
                     class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-bold transition-colors">
                 저장하기
