@@ -314,4 +314,28 @@ class Wiki extends BaseController
         // 2. 결과를 보여줄 뷰 파일을 호출합니다.
         return view('wiki/recent', $data);
     }
+
+    public function upload()
+{
+    $file = $this->request->getFile('file');
+
+    if (!$file->isValid()) {
+        return $this->response->setJSON(['success' => false, 'message' => $file->getErrorString()]);
+    }
+
+    // 보안 검사: 실행 파일 등 제한
+    if ($file->getExtension() === 'php' || $file->getExtension() === 'exe') {
+        return $this->response->setJSON(['success' => false, 'message' => '허용되지 않는 파일 형식입니다.']);
+    }
+
+    // writable/uploads/wiki 폴더에 저장 (또는 public/uploads/wiki)
+    $newName = $file->getRandomName();
+    $file->move(ROOTPATH . 'public/uploads/wiki', $newName);
+
+    return $this->response->setJSON([
+        'success' => true,
+        'url' => base_url('uploads/wiki/' . $newName),
+        'fileName' => $file->getClientName()
+    ]);
+}
 }
